@@ -225,9 +225,9 @@ function generateRecords(count: number): AnomalyRecord[] {
         const responseDate = hoursAfter(initDate, responseHours)
 
         // 处理: 总时长 1~36h, 有效时长 1~16h — 两者独立, 体现"总时长"与"有效时长"指标分离
-        const processHours = Math.random() * 36           // 总耗时(含非工作时段)
-        const effectiveProcessHours = Math.random() * 16  // 有效工作时长
-        const processOvertime = effectiveProcessHours > 8 ? "是" : "否"  // 有效超时 > 8h
+        const processHours = Math.random() * 36 // 总耗时(含非工作时段)
+        const effectiveProcessHours = Math.random() * 16 // 有效工作时长
+        const processOvertime = effectiveProcessHours > 8 ? "是" : "否" // 有效超时 > 8h
         const processDate = hoursAfter(responseDate, Math.max(processHours - responseHours, 0.5))
 
         // 关闭时间
@@ -310,12 +310,12 @@ function buildDeptStat(name: string, rs: AnomalyRecord[]): DepartmentStats {
     const THRESHOLD = new Date("2023-01-01")
 
     let responded = 0
-    let respondedTimelyTotal = 0   // 总时长2H: ifnull(响应日期, now) - 发起日期 <= 2h
-    let respondedTimelyEffective = 0  // 有效时长2H: pre-computed flag
+    let respondedTimelyTotal = 0 // 总时长2H: ifnull(响应日期, now) - 发起日期 <= 2h
+    let respondedTimelyEffective = 0 // 有效时长2H: pre-computed flag
 
     let processed = 0
-    let processedTimelyTotal = 0   // 总时长24H: ifnull(处理日期, now) - ifnull(响应日期, 发起日期) <= 24h
-    let processedTimelyEffective = 0  // 有效时长8H: pre-computed flag
+    let processedTimelyTotal = 0 // 总时长24H: ifnull(处理日期, now) - ifnull(响应日期, 发起日期) <= 24h
+    let processedTimelyEffective = 0 // 有效时长8H: pre-computed flag
 
     let closed = 0
 
@@ -397,8 +397,12 @@ export function computePersonalStats(records: AnomalyRecord[]): PersonalStats[] 
             const now = new Date()
             const THRESHOLD = new Date("2023-01-01")
 
-            let responded = 0, respondedTimelyTotal = 0, respondedTimelyEffective = 0
-            let processed = 0, processedTimelyTotal = 0, processedTimelyEffective = 0
+            let responded = 0,
+                respondedTimelyTotal = 0,
+                respondedTimelyEffective = 0
+            let processed = 0,
+                processedTimelyTotal = 0,
+                processedTimelyEffective = 0
             let closed = 0
 
             for (const r of rs) {
@@ -471,8 +475,12 @@ export function computeGroupStats(records: AnomalyRecord[], department: string):
             const now = new Date()
             const THRESHOLD = new Date("2023-01-01")
 
-            let responded = 0, respondedTimelyTotal = 0, respondedTimelyEffective = 0
-            let processed = 0, processedTimelyTotal = 0, processedTimelyEffective = 0
+            let responded = 0,
+                respondedTimelyTotal = 0,
+                respondedTimelyEffective = 0
+            let processed = 0,
+                processedTimelyTotal = 0,
+                processedTimelyEffective = 0
             let closed = 0
 
             for (const r of rs) {

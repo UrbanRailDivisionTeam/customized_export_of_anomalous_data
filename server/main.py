@@ -14,6 +14,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 from litestar import Litestar, get
+from litestar.response import File as FileResponse
 from litestar.config.cors import CORSConfig
 from litestar.params import Parameter
 from litestar.static_files.config import create_static_files_router
@@ -229,6 +230,14 @@ async def api_group_stats(
                          department, y, m, e)
         return compute_group_stats(RECORDS, department)
 
+LOGO_PATH = Path(__file__).parent / "static" / "中车.png"
+
+
+# ════════════════════ /api/logo ════════════════════
+
+@get("/api/logo")
+async def get_logo() -> FileResponse:
+    return FileResponse(path=str(LOGO_PATH), media_type="image/png")
 
 # ============================================================
 # 启动
