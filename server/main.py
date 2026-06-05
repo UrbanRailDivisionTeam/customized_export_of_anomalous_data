@@ -259,6 +259,7 @@ static_files = create_static_files_router(
 
 app = Litestar(
     route_handlers=[
+        get_logo,
         api_records,
         api_department_stats,
         api_personal_stats,
