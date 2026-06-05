@@ -225,7 +225,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 STATIC_DIR.mkdir(exist_ok=True)
 
 static_files = create_static_files_router(
-    path="/static",
+    path="/",
     directories=["static"],
     name="static",
     html_mode=True,
