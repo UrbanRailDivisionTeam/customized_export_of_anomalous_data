@@ -66,12 +66,13 @@ def _build_pipeline(year: int, month: int) -> duckdb.DuckDBPyConnection:
         CH_HOST, CH_PORT, CH_DATABASE)
     ch = get_ch_client()
     sql_query = (
-        'SELECT * FROM dwd.cg_mes_usm_exception_processed bill '
-        'WHERE bill."发起日期" >= %(start)s AND bill."发起日期" < %(end)s'
+        f'SELECT * FROM dwd.cg_mes_usm_exception_processed bill '
+        f'WHERE bill."发起日期" >= \'{start_date}\' '
+        f'AND bill."发起日期" < \'{end_date}\' '
     )
     logger.info("[pipeline] 执行查询: %s ~ %s", start_date.date(), end_date.date())
 
-    df = ch.query_df(sql_query, parameters={"start": start_date, "end": end_date})
+    df = ch.query_df(sql_query)
     t2 = datetime.now()
 
     col_count = len(df.columns)
