@@ -12,3 +12,4 @@ wheels/
 # 前端构建产物 (部署时从 web/out 复制)
 static/*
 !static/.gitkeep
+uv.lock
