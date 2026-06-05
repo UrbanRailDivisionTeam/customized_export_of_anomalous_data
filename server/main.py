@@ -16,7 +16,7 @@ import pandas as pd
 from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
 from litestar.params import Parameter
-from litestar.static_files.config import StaticFilesConfig
+from litestar.static_files.config import create_static_files_router
 
 import sql as sql_module
 from connect import get_ch_client
@@ -224,17 +224,23 @@ cors_config = CORSConfig(allow_origins=["*"], allow_methods=["GET"])
 STATIC_DIR = Path(__file__).parent / "static"
 STATIC_DIR.mkdir(exist_ok=True)
 
+static_files = create_static_files_router(
+    path="/static",
+    directories=["static"],
+    name="static",
+    html_mode=True,
+    include_in_schema=False,
+)
+
 app = Litestar(
     route_handlers=[
         api_records,
         api_department_stats,
         api_personal_stats,
         api_group_stats,
+        static_files
     ],
     cors_config=cors_config,
-    static_files_config=[
-        StaticFilesConfig(directories=[STATIC_DIR], path="/"),
-    ],
 )
 
 if __name__ == "__main__":
