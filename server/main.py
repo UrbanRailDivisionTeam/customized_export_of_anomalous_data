@@ -114,26 +114,6 @@ def _df_to_records(df: pd.DataFrame) -> list[dict]:
     return df.to_dict(orient="records")
 
 
-def _compute_rates(records: list[dict]) -> list[dict]:
-    """为 department_sql 输出补充率字段 (SQL 不含 rates, Python 补算)"""
-    for r in records:
-        total = r.get("总数", 0) or 1
-        for key in ["响应数", "处理数", "关闭数"]:
-            prefix = key.replace("数", "")
-            if key in r:
-                r[f"{prefix}率"] = r[key] / total
-        for suffix in ["_总时长2H", "_有效时长2H", "_总时长24H", "_有效时长8H"]:
-            if "2H" in suffix:
-                cnt_key = f"响应及时数{suffix}"
-                rate_key = f"响应及时率{suffix}"
-            else:
-                cnt_key = f"处理及时数{suffix}"
-                rate_key = f"处理及时率{suffix}"
-            if cnt_key in r:
-                r[rate_key] = r[cnt_key] / total
-    return records
-
-
 # ============================================================
 # Mock 降级 (数据库不可用时)
 # ============================================================
@@ -184,10 +164,9 @@ async def api_department_stats(
     y, m = (year, month) if year is not None and month is not None else _default_year_month()
     try:
         db = _build_pipeline(y, m)
-        records = _df_to_records(
+        return _df_to_records(
             db.sql(sql_module.department_sql.format(table="data")).df()
         )
-        return _compute_rates(records)
     except Exception as e:
         logger.exception("ClickHouse 查询 /api/stats/department 失败 (y=%d m=%d): %s", y, m, e)
         return compute_department_stats(RECORDS)

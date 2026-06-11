@@ -68,9 +68,6 @@ export default function Page() {
             <Tabs defaultValue="source" className="w-full">
                 <div className="overflow-x-auto">
                     <TabsList className="mb-6 h-auto gap-1 p-2">
-                        <TabsTrigger value="monthly" className="h-auto px-3 py-1.5 text-sm">
-                            月报视图
-                        </TabsTrigger>
                         <TabsTrigger value="source" className="h-auto px-3 py-1.5 text-sm">
                             部门概览
                         </TabsTrigger>
@@ -89,15 +86,18 @@ export default function Page() {
                         <TabsTrigger value="process" className="h-auto px-3 py-1.5 text-sm">
                             工艺质量
                         </TabsTrigger>
+                        <TabsTrigger value="quality" className="h-auto px-3 py-1.5 text-sm">
+                            质量管理
+                        </TabsTrigger>
+                        <TabsTrigger value="admin" className="h-auto px-3 py-1.5 text-sm">
+                            综合管理
+                        </TabsTrigger>
                         <TabsTrigger value="raw" className="h-auto px-3 py-1.5 text-sm">
                             原始数据
                         </TabsTrigger>
                     </TabsList>
                 </div>
 
-                <TabsContent value="monthly">
-                    <RawDataTable params={date} />
-                </TabsContent>
                 <TabsContent value="source">
                     <DepartmentOverview params={date} />
                 </TabsContent>
@@ -115,6 +115,12 @@ export default function Page() {
                 </TabsContent>
                 <TabsContent value="process">
                     <GroupStats department="工艺技术" params={date} />
+                </TabsContent>
+                <TabsContent value="quality">
+                    <GroupStats department="质量管理" params={date} />
+                </TabsContent>
+                <TabsContent value="admin">
+                    <GroupStats department="综合管理" params={date} />
                 </TabsContent>
                 <TabsContent value="raw">
                     <RawDataTable params={date} />

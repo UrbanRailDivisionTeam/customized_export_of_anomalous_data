@@ -46,38 +46,36 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 30, exportF
     })
 
     const handleExportExcel = () => {
-        const visibleRows = table.getFilteredRowModel().rows
-        const cols = table.getAllColumns()
-        const headers = cols.map((col) => {
-            const def = col.columnDef as { header?: string; accessorKey?: string }
-            return (def.header ?? def.accessorKey ?? col.id) as string
-        })
+        try {
+            // 导出全部数据 (不限于当前筛选/搜索匹配的行)
+            const allRows = table.getCoreRowModel().rows
+            const cols = table.getAllColumns()
 
-        const exportData = visibleRows.map((row) => {
-            const record = row.original as Record<string, unknown>
-            const obj: Record<string, unknown> = {}
-            cols.forEach((col) => {
-                const def = col.columnDef as { accessorKey?: string }
+            // Build display-header → accessorKey mapping for consistent column naming
+            const colMap: { header: string; key: string }[] = cols.map((col) => {
+                const def = col.columnDef as { header?: string; accessorKey?: string }
                 const key = (def.accessorKey ?? col.id) as string
-                obj[key] = record[key] ?? ""
+                const header = (def.header ?? key) as string
+                return { header, key }
             })
-            return obj
-        })
 
-        const headerRow = headers.reduce(
-            (acc, h, i) => {
-                const key = (cols[i].columnDef as { accessorKey?: string }).accessorKey ?? cols[i].id
-                acc[h] = (cols[i].columnDef as { header?: string }).header ?? key
-                return acc
-            },
-            {} as Record<string, unknown>
-        )
-        const finalData = [headerRow, ...exportData]
+            // All rows use display header as key → json_to_sheet auto-generates correct column headers
+            const exportData = allRows.map((row) => {
+                const record = row.original as Record<string, unknown>
+                const obj: Record<string, unknown> = {}
+                for (const { header, key } of colMap) {
+                    obj[header] = record[key] ?? ""
+                }
+                return obj
+            })
 
-        const ws = XLSX.utils.json_to_sheet(finalData, { skipHeader: true })
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
-        XLSX.writeFile(wb, `${exportFileName}.xlsx`)
+            const ws = XLSX.utils.json_to_sheet(exportData)
+            const wb = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
+            XLSX.writeFile(wb, `${exportFileName}.xlsx`)
+        } catch (e) {
+            console.error("导出 Excel 失败:", e)
+        }
     }
 
     const filtered = table.getFilteredRowModel().rows.length
