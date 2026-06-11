@@ -1,7 +1,7 @@
 #requires -Version 5.1
 # 单项目 uv 自动运行器（带崩溃重试）
-# 将此脚本放在 uv 项目根目录下运行
-# 需要 uv 和 git 在 PATH 中，当前目录必须包含 pyproject.toml 和 .git
+# 将此脚本放在 uv 项目根目录下，或项目根目录的任意子目录下运行
+# 需要 uv 和 git 在 PATH 中
 
 # ==================== 配置区 ====================
 $CheckIntervalMinutes = 5
@@ -25,18 +25,32 @@ function Write-Log {
     Add-Content -Path $logFile -Value $logLine -ErrorAction SilentlyContinue
 }
 
-# ==================== 项目验证 ====================
-$ProjectPath = $PSScriptRoot
-$ProjectName = Split-Path $ProjectPath -Leaf
+# ==================== 项目路径探测 ====================
+$ScriptDir = $PSScriptRoot
+$ParentDir = Split-Path $ScriptDir -Parent
 
-if (!(Test-Path (Join-Path $ProjectPath "pyproject.toml"))) {
-    Write-Error "当前目录缺少 pyproject.toml，不是 uv 项目"
+# 检查当前目录
+$HasGitCurrent = Test-Path (Join-Path $ScriptDir ".git")
+$HasPyProjectCurrent = Test-Path (Join-Path $ScriptDir "pyproject.toml")
+
+# 检查上一级目录
+$HasGitParent = if ($ParentDir) { Test-Path (Join-Path $ParentDir ".git") } else { $false }
+$HasPyProjectParent = if ($ParentDir) { Test-Path (Join-Path $ParentDir "pyproject.toml") } else { $false }
+
+$ProjectPath = $null
+
+if ($HasGitCurrent -and $HasPyProjectCurrent) {
+    $ProjectPath = $ScriptDir
+    Write-Log "项目根目录: 当前目录 ($ScriptDir)"
+} elseif ($HasGitParent -and $HasPyProjectParent) {
+    $ProjectPath = $ParentDir
+    Write-Log "项目根目录: 上一级目录 ($ParentDir)"
+} else {
+    Write-Error "未找到 uv 项目。当前目录或其上一级目录必须同时包含 pyproject.toml 和 .git"
     exit 1
 }
-if (!(Test-Path (Join-Path $ProjectPath ".git"))) {
-    Write-Error "当前目录缺少 .git，不是 Git 仓库"
-    exit 1
-}
+
+$ProjectName = Split-Path $ProjectPath -Leaf
 
 # ==================== 启动命令探测 ====================
 function Get-StartCommand {
