@@ -23,7 +23,7 @@ const YEAR_OPTIONS = [currentYear - 1, currentYear, currentYear + 1]
 const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1)
 
 export default function Page() {
-    const [date, setDate] = useState<DateSelection>({ year: currentYear, month: currentMonth - 1 || 12 })
+    const [date, setDate] = useState<DateSelection>({ year: currentYear, month: currentMonth })
 
     return (
         <div className="flex min-h-svh flex-col p-4 sm:p-6 lg:p-8">

@@ -13,6 +13,8 @@ const columns: ColumnDef<PersonalStats>[] = [
     { accessorKey: "组室", header: "组室" },
     { accessorKey: "部门", header: "部门" },
     { accessorKey: "总数", header: "总数", cell: ({ getValue }) => <span className="tabular-nums">{getValue<number>()}</span> },
+    { accessorKey: "响应及时数_总时长2H", header: "及时响应数", cell: ({ getValue }) => <span className="tabular-nums">{getValue<number>()}</span> },
+    { accessorKey: "处理及时数_总时长24H", header: "及时处理数", cell: ({ getValue }) => <span className="tabular-nums">{getValue<number>()}</span> },
     { accessorKey: "响应率", header: "响应率", cell: ({ getValue }) => <RateBadge value={getValue<number>()} /> },
     { accessorKey: "响应及时率_总时长2H", header: "响应及时率", cell: ({ getValue }) => <RateBadge value={getValue<number>()} /> },
     { accessorKey: "处理率", header: "处理率", cell: ({ getValue }) => <RateBadge value={getValue<number>()} /> },
